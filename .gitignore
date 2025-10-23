@@ -5,7 +5,7 @@
 .import/
 export.cfg
 export_presets.cfg
-.uid
+*.uid
 
 # Imported translations (automatically generated from CSV files)
 *.translation
@@ -16,4 +16,4 @@ data_*/
 mono_crash.*.json
 
 # Godot Settings
-.vscode\settings.json
+.vscode/
