@@ -12,9 +12,10 @@ config_version=5
 
 config/name="Green Bean"
 run/main_scene="res://scenes/MainMenu.tscn"
-config/features=PackedStringArray("4.3", "GL Compatibility")
+config/features=PackedStringArray("4.5", "GL Compatibility")
 boot_splash/image="res://assets/ui_etc/Titlescreencap.png"
 config/icon="res://assets/ui_etc/greanbean.png"
+config/windows_native_icon="res://assets/ui_etc/greanbean.ico"
 
 [autoload]
 
@@ -35,6 +36,10 @@ mouse_cursor/custom_image="res://assets/ui_etc/tile_0028.png"
 [global_group]
 
 animation_players=""
+
+[gui]
+
+theme/custom_font="res://assets/fonts/PixelOperator8.ttf"
 
 [importer_defaults]
 
