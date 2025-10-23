@@ -1,4 +1,4 @@
-[gd_scene load_steps=34 format=3 uid="uid://b7n6qr4dq4pch"]
+[gd_scene load_steps=36 format=3 uid="uid://b7n6qr4dq4pch"]
 
 [ext_resource type="Script" path="res://scripts/options_menu.gd" id="1_7653n"]
 [ext_resource type="Texture2D" uid="uid://dnk230h4ijlyl" path="res://assets/ui_etc/Titlescreencap.png" id="1_be8fa"]
@@ -164,6 +164,14 @@ corner_radius_top_left = 15
 corner_radius_top_right = 15
 corner_radius_bottom_right = 15
 corner_radius_bottom_left = 15
+
+[sub_resource type="InputEventKey" id="InputEventKey_rfdrr"]
+device = -1
+keycode = 77
+unicode = 109
+
+[sub_resource type="Shortcut" id="Shortcut_jfg48"]
+events = [SubResource("InputEventKey_rfdrr")]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_r8l5v"]
 content_margin_left = 4.0
@@ -385,6 +393,7 @@ offset_bottom = 104.0
 
 [node name="Back" type="Button" parent="BackMarginContainer"]
 layout_mode = 2
+tooltip_text = "(Esc)"
 theme_override_colors/font_disabled_color = Color(0, 0, 0, 1)
 theme_override_colors/font_hover_pressed_color = Color(0, 0, 0, 1)
 theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
@@ -422,7 +431,7 @@ grow_horizontal = 0
 
 [node name="ResetLevel" type="Button" parent="ResetContainer"]
 layout_mode = 2
-tooltip_text = "Resets the timer & level (press R)"
+tooltip_text = "Resets the timer & level (R)"
 theme_override_colors/icon_pressed_color = Color(0.226707, 0.226707, 0.226707, 1)
 theme_override_fonts/font = ExtResource("2_j3v3r")
 theme_override_font_sizes/font_size = 24
@@ -478,6 +487,7 @@ grow_vertical = 2
 
 [node name="MainMenu" type="Button" parent="MainMenuContainer"]
 layout_mode = 2
+tooltip_text = "(M)"
 theme_override_colors/font_disabled_color = Color(0, 0, 0, 1)
 theme_override_colors/font_hover_pressed_color = Color(0, 0, 0, 1)
 theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
@@ -492,6 +502,7 @@ theme_override_styles/focus = SubResource("StyleBoxEmpty_cmkd0")
 theme_override_styles/hover = SubResource("StyleBoxFlat_a6cr2")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_nju7t")
 theme_override_styles/normal = SubResource("StyleBoxFlat_k6kxm")
+shortcut = SubResource("Shortcut_jfg48")
 shortcut_in_tooltip = false
 text = "Main Menu"
 icon = ExtResource("7_kxxqt")
