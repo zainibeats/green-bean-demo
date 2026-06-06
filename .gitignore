@@ -10,6 +10,21 @@ export_presets.cfg
 # Imported translations (automatically generated from CSV files)
 *.translation
 
+# Temporary files
+*.tmp
+*.log
+*.bak
+*.orig
+*.rej
+*~
+*.swp
+*.swo
+
+# OS metadata
+.DS_Store
+Thumbs.db
+desktop.ini
+
 # Mono-specific ignores
 .mono/
 data_*/
