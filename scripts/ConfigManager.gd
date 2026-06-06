@@ -1,7 +1,6 @@
 extends Node
 
 const DEFAULT_MASTER_VOLUME: float = 0
-const DEFAULT_MUSIC_VOLUME: float = 0
 const CONFIG_PATH: String = "user://settings.cfg"
 
 var config: ConfigFile = ConfigFile.new()
@@ -16,9 +15,7 @@ func _ready() -> void:
 	AudioServer.set_bus_volume_db(AudioServer.get_bus_index("Master"), master_volume)
 	
 	# Apply music volume from the config on game start
-	var music_volume = get_value("audio", "music_volume", DEFAULT_MUSIC_VOLUME)
-	AudioServer.set_bus_volume_db(AudioServer.get_bus_index("Music"), music_volume)
-	Music.set_volume(music_volume)
+	Music.set_volume(Music.get_saved_volume_percent())
 
 # Loads configuration file or creates a new one if it doesn't exist
 func load_config() -> void:

@@ -135,7 +135,7 @@ func _show_active_timer() -> void:
 
 func _restart_background_music() -> void:
 	Music.background_music.seek(0)
-	Music.background_music.volume_db = Music.current_volume
+	Music.set_volume(Music.current_volume)
 	Music.background_music.play()
 
 func _get_next_level_path() -> String:
