@@ -1,41 +1,47 @@
 extends Area2D
 
+const FADE_DURATION: float = 1.0
+const DEATH_TIME_SCALE: float = 0.5
+
 @onready var timer: Timer = $Timer
 
-var timer_duration: float = 1.0 # Duration for the timer (IF NOT EQUAL TO GAMESTATE FADE DURATION ONE WILL COMPLETE BEFORE THE OTHER)
+var timer_duration: float = 1.0
 
 func _on_body_entered(body: Node2D) -> void:
-	if body.name == "Player" and not Gamestate.is_invincible:
-		# Start fade effect & slow time
-		var fade_node = body.get_node("FadetoBlack")
-		if fade_node and fade_node is ColorRect:
-			var tween = create_tween()
-			tween.tween_property(
-				fade_node,
-				"modulate:a", # Modify the alpha channel
-				1.0, # Fully opaque
-				1.0  #Fade duration (1 second)
-		)
+	if body.name != "Player" or Gamestate.is_invincible:
+		return
 
-		# Call the player's collision logic if implemented
-		if body.has_method("_on_body_entered"):
-			body._on_body_entered(self)
-			
-		Engine.time_scale = 0.5
-	
-		 # Update global state
-		Gamestate.cannot_move = true
-		Gamestate.alive = false
-	
-		if body.has_node("CollisionShape2D"):
-			body.get_node("CollisionShape2D").queue_free()  # Optionally remove collision shape
-		
-		timer.wait_time = timer_duration
-		timer.start() # Start the timer for the scene reload
+	_fade_player_to_black(body)
+	_notify_player_collision(body)
+	_enter_death_state()
+	_remove_player_collision(body)
+	_start_reload_timer()
 	
 func _on_timer_timeout() -> void:
-	# Reset the time scale and reload the scene
 	Engine.time_scale = 1
 	get_tree().reload_current_scene()
 	Gamestate.cannot_move = false
 	Gamestate.alive = true
+
+func _fade_player_to_black(body: Node2D) -> void:
+	var fade_node = body.get_node("FadetoBlack")
+	if fade_node and fade_node is ColorRect:
+		var tween = create_tween()
+		tween.tween_property(fade_node, "modulate:a", 1.0, FADE_DURATION)
+
+func _notify_player_collision(body: Node2D) -> void:
+	if body.has_method("_on_body_entered"):
+		body._on_body_entered(self)
+
+func _enter_death_state() -> void:
+	Engine.time_scale = DEATH_TIME_SCALE
+	Gamestate.cannot_move = true
+	Gamestate.alive = false
+
+func _remove_player_collision(body: Node2D) -> void:
+	if body.has_node("CollisionShape2D"):
+		body.get_node("CollisionShape2D").queue_free()
+
+func _start_reload_timer() -> void:
+	timer.wait_time = timer_duration
+	timer.start()

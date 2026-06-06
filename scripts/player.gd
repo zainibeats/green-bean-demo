@@ -1,10 +1,15 @@
 extends CharacterBody2D
 
-const SPEED = 80.0
-const CROUCH_SPEED = 40.0
-const JUMP_VELOCITY = -300.0
-const MAX_JUMPS = 2
-const COYOTE_TIME = 0.2
+const SPEED: float = 80.0
+const RUN_MULTIPLIER: float = 1.5
+const CROUCH_SPEED: float = 40.0
+const JUMP_VELOCITY: float = -300.0
+const MAX_JUMPS: int = 2
+const COYOTE_TIME: float = 0.2
+const EDGE_RAY_RIGHT: Vector2 = Vector2(8, 2)
+const EDGE_RAY_LEFT: Vector2 = Vector2(-8, 2)
+const LANDING_GRUNT_CHANCE: float = 0.8
+const DEATH_SOUND_1_CHANCE: float = 0.8
 
 @onready var animated_sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var dust_fx: AnimatedSprite2D = $DustFX
@@ -33,8 +38,7 @@ var is_crouched = false
 
 # DEBUG VARIABLES. DELETE WHEN EXPORTING
 var teleport_target = null
-var teleport_speed = 200
-var invincibility = false
+var teleport_speed: float = 200.0
 
 func _on_ready() -> void:
 	hurt_sound_1.connect("finished", Callable(self, "_on_death_sound_finished"))
@@ -53,9 +57,8 @@ func change_skin(index: int) -> void:
 
 func _physics_process(delta: float) -> void:
 	if Gamestate.is_paused:
-		return # Block all player logic while paused
+		return
 	
-	# Death handling
 	if not Gamestate.alive and not has_died:
 		_handle_death()
 		return
@@ -64,15 +67,8 @@ func _physics_process(delta: float) -> void:
 		velocity = Vector2.ZERO
 		return
 
-	# Reset states when grounded else apply gravity
-	if is_on_floor():
-		_reset_ground_state()
-	else:
-		velocity += get_gravity() * delta
-		coyote_timer -= delta
-		in_air = true
+	_update_vertical_state(delta)
 
-	# Handle input and movement
 	_handle_crouch()
 	
 	if not is_crouched:
@@ -83,29 +79,31 @@ func _physics_process(delta: float) -> void:
 	
 	_handle_debug()
 
-	# Move and slide
 	move_and_slide()
 
-func _handle_debug():
+func _update_vertical_state(delta: float) -> void:
+	if is_on_floor():
+		_reset_ground_state()
+		return
+
+	velocity += get_gravity() * delta
+	coyote_timer -= delta
+	in_air = true
+
+func _handle_debug() -> void:
 	if Input.is_action_pressed("debug_mode") and not Gamestate.debug_mode:
 		Gamestate.debug_mode = true
-		print ("Debug Mode ON")
+		print("Debug Mode ON")
 		Gamestate.start_game()
 	if Gamestate.debug_mode:
 		if Input.is_action_pressed("level_complete"):
 			Gamestate.level_complete()
-			print ("Cheat Activated: Level Complete!")
+			print("Cheat Activated: Level Complete!")
 		if Input.is_action_pressed("click_debug"):
 			teleport_target = get_global_mouse_position()
 			velocity = position.direction_to(get_global_mouse_position()) * teleport_speed
-		#if Input.is_action_just_pressed("invincibility") and not Gamestate.is_invincible:
-			#Gamestate.is_invincible = true
-			#print ("Invincibility = ON")
-		#else:
-			#Gamestate.is_invincible = false
-			#print ("Invincibility = OFF")
 
-func _handle_crouch():
+func _handle_crouch() -> void:
 	if Input.is_action_pressed("crouch"):
 		if not is_crouched:
 			is_crouched = true
@@ -115,27 +113,45 @@ func _handle_crouch():
 		if is_crouched:
 			is_crouched = false
 			animated_sprite.play("idle")
-			
-		# If not crouched, make dust visible again when running
+
 		if velocity.x != 0 and not dust_fx.is_playing():
-			dust_fx.visible = true
-			dust_fx.play("dustfx")
+			_play_dust_fx()
 
-func _handle_jump():
-	if Input.is_action_just_pressed("jump"):
-		if jumps_remaining == MAX_JUMPS and (is_on_floor() or coyote_timer > 0): # First Jump
-			_perform_jump("jump")
-			coyote_timer = 0 # Disable further coyote jumps
-			jump_sound.play()
-		elif jumps_remaining == 1: # Double jump
-			_perform_jump("doublejump", true)
-			jump_sound_2.play()
-		elif jumps_remaining == MAX_JUMPS and in_air and coyote_timer <= 0:
-			_perform_jump("jump")
-			jumps_remaining -= 1
-			jump_sound.play()
+func _handle_jump() -> void:
+	if not Input.is_action_just_pressed("jump"):
+		return
 
-func _perform_jump(animation: String, is_double_jump: bool = false):
+	if _can_first_jump():
+		_perform_first_jump()
+	elif _can_double_jump():
+		_perform_double_jump()
+	elif _can_air_jump_without_coyote():
+		_perform_air_jump_without_coyote()
+
+func _can_first_jump() -> bool:
+	return jumps_remaining == MAX_JUMPS and (is_on_floor() or coyote_timer > 0)
+
+func _can_double_jump() -> bool:
+	return jumps_remaining == 1
+
+func _can_air_jump_without_coyote() -> bool:
+	return jumps_remaining == MAX_JUMPS and in_air and coyote_timer <= 0
+
+func _perform_first_jump() -> void:
+	_perform_jump("jump")
+	coyote_timer = 0.0
+	jump_sound.play()
+
+func _perform_double_jump() -> void:
+	_perform_jump("doublejump", true)
+	jump_sound_2.play()
+
+func _perform_air_jump_without_coyote() -> void:
+	_perform_jump("jump")
+	jumps_remaining -= 1
+	jump_sound.play()
+
+func _perform_jump(animation: String, is_double_jump: bool = false) -> void:
 	velocity.y = JUMP_VELOCITY
 	animated_sprite.play(animation)
 	jumps_remaining -= 1
@@ -143,8 +159,8 @@ func _perform_jump(animation: String, is_double_jump: bool = false):
 	if is_double_jump:
 		doublejump_started = true
 
-func _reset_ground_state():
-	if has_died: # Prevent reset if in death state
+func _reset_ground_state() -> void:
+	if has_died:
 		return
 
 	if jumps_remaining != MAX_JUMPS:
@@ -152,107 +168,105 @@ func _reset_ground_state():
 		doublejump_started = false
 	coyote_timer = COYOTE_TIME
 	
-	# Play landing sound randomly
 	if in_air and not first_landing:
-		var roll = randf()
-		if roll <= 0.8:
-			grunt_sound.play()
-		else:
-			grunt_sound_2.play()
+		_play_landing_sound()
 		
-	# Reset flags
 	in_air = false
 	first_landing = false
 	first_jump = false
 
-func _handle_horizontal_movement():
+func _play_landing_sound() -> void:
+	if randf() <= LANDING_GRUNT_CHANCE:
+		grunt_sound.play()
+	else:
+		grunt_sound_2.play()
+
+func _handle_horizontal_movement() -> void:
 	var direction := Input.get_axis("move_left", "move_right")
-	var is_walking := Input.is_action_pressed("walk")
-	var current_speed = SPEED * (1.0 if is_walking else 1.5)
+	var current_speed := _get_current_speed()
 	
-	# Crouch speed when grounded
 	if is_on_floor() and is_crouched:
 		current_speed = CROUCH_SPEED
-		
-		# Stop movement if no floor is detected ahead
-		if not edge_ray.is_colliding():
-			if (direction > 0 and edge_ray.target_position.x > 0) or (direction < 0 and edge_ray.target_position.x < 0):
-				direction = 0
+		direction = _block_crouch_edge_movement(direction)
 	
-	# Update horizontal velocity
 	velocity.x = direction * current_speed if direction != 0  else move_toward(
 		velocity.x,
 		0,
 		current_speed,
 		)
 		
-	# Flip the Sprite and DustFX based on direction
+	_update_facing(direction)
+
+func _get_current_speed() -> float:
+	return SPEED * (1.0 if Input.is_action_pressed("walk") else RUN_MULTIPLIER)
+
+func _block_crouch_edge_movement(direction: float) -> float:
+	if edge_ray.is_colliding():
+		return direction
+	if (direction > 0 and edge_ray.target_position.x > 0) or (direction < 0 and edge_ray.target_position.x < 0):
+		return 0.0
+	return direction
+
+func _update_facing(direction: float) -> void:
 	if direction > 0:
 		animated_sprite.flip_h = false
 		dust_fx.flip_h = false
 		dust_fx.position.x = -abs(dust_fx.position.x)
-		edge_ray.target_position = Vector2(8,2) # Forward-right and down
+		edge_ray.target_position = EDGE_RAY_RIGHT
 	elif direction < 0:
 		animated_sprite.flip_h = true
 		dust_fx.flip_h = true
 		dust_fx.position.x = abs(dust_fx.position.x)
-		edge_ray.target_position = Vector2(-8,2) # Forward-right and down
+		edge_ray.target_position = EDGE_RAY_LEFT
 		
-func _update_animation():
+func _update_animation() -> void:
 	if is_on_floor():
-		if is_crouched:
-			animated_sprite.play("crouch")
-			# Stop the dust FX when crouched
+		_update_ground_animation()
+		return
+
+	_update_air_animation()
+
+func _update_ground_animation() -> void:
+	if is_crouched:
+		animated_sprite.play("crouch")
+		_stop_dust_fx()
+	elif velocity.x != 0:
+		animated_sprite.play("walk" if Input.is_action_pressed("walk") else "run")
+		if Input.is_action_pressed("walk"):
 			_stop_dust_fx()
-			
-		# Grounded animations
-		elif velocity.x != 0:
-			var is_running := not Input.is_action_pressed("walk") and velocity.x != 0
-			
-			# Play walk or run animation
-			animated_sprite.play("walk" if Input.is_action_pressed("walk") else "run")
-			
-			# Only show dust while running
-			if is_running and not dust_fx.is_playing():
-				dust_fx.visible = true
-				dust_fx.play("dustfx")
-			elif not is_running:
-				_stop_dust_fx()
-			
 		else:
-			animated_sprite.play("idle")
-			# Stop dust when idle
-			_stop_dust_fx()
-
-	elif doublejump_started:
-		# Ensure double jump anim is maintained
-		if animated_sprite.animation != "doublejump":
-			animated_sprite.play("doublejump")
-		# Stop dust when doublejump
-		_stop_dust_fx()
-			
-	elif velocity.y > 0:
-		# Falling animation
-		if animated_sprite.animation != "fall" and not first_jump:
-			animated_sprite.play("fall")
-		# Stop dust when falling
-		_stop_dust_fx()
-		
+			_play_dust_fx()
 	else:
-		# Regular jump animation
-		if animated_sprite.animation != "jump":
-			animated_sprite.play("jump")
-		# Stop dust while jumping
+		animated_sprite.play("idle")
 		_stop_dust_fx()
 
-func _stop_dust_fx():
+func _update_air_animation() -> void:
+	if doublejump_started:
+		_play_if_needed("doublejump")
+	elif velocity.y > 0:
+		if not first_jump:
+			_play_if_needed("fall")
+	else:
+		_play_if_needed("jump")
+
+	_stop_dust_fx()
+
+func _play_if_needed(animation: String) -> void:
+	if animated_sprite.animation != animation:
+		animated_sprite.play(animation)
+
+func _play_dust_fx() -> void:
+	dust_fx.visible = true
+	if not dust_fx.is_playing():
+		dust_fx.play("dustfx")
+
+func _stop_dust_fx() -> void:
 	if dust_fx.is_playing():
 		dust_fx.stop()
 	dust_fx.visible = false
 
-func _handle_death():
-	var roll = randf()
-	if roll <= 0.8:
+func _handle_death() -> void:
+	if randf() <= DEATH_SOUND_1_CHANCE:
 		hurt_sound_1.play()
 	else:
 		hurt_sound_2.play()
@@ -260,6 +274,6 @@ func _handle_death():
 	first_landing = true
 	animated_sprite.play("death")
 
-func _on_death_sound_finished():
+func _on_death_sound_finished() -> void:
 	if Gamestate.alive:
 		has_died = false

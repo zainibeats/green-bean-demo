@@ -1,5 +1,10 @@
 extends Control
 
+const GAME_SCENE_PATH: String = "res://scenes/game1.tscn"
+const OPTIONS_SCENE_PATH: String = "res://scenes/options_menu.tscn"
+const START_DELAY: float = 2.5
+const FADE_DURATION: float = 2.0
+
 @export var tween_intensity: float
 @export var tween_duration: float
 @onready var start: Button = $VBoxContainer/Start
@@ -11,8 +16,6 @@ extends Control
 @onready var playtimer: Timer = $Timers/Playtimer
 @onready var animation_player: AnimationPlayer = $VBoxContainer/TitleReal/AnimationPlayer
 
-var timer_duration: float = 2.5
-
 func _on_ready() -> void:
 	if Music.background_music.playing:
 		Music.background_music.stop()
@@ -21,31 +24,27 @@ func _on_ready() -> void:
 		Music.play_menu_music()
 
 func _on_start_pressed() -> void:
-	# Stop the menu music when transitioning to gameplay
 	start.disabled = true
 	Music.menu_music.stop()
 	start_sound.play()
-	playtimer.start(timer_duration)
+	playtimer.start(START_DELAY)
 	
-	# Fade to black
-	var tween = create_tween()
-	tween.tween_property(
-		fadeto_black,
-		"modulate:a", # Modify the alpha channel
-		1.0, # Fully opaque
-		2.0  # Fade duration 
-	)
+	_fade_to_black(FADE_DURATION)
 	animation_player.play("shake")
 
 func _on_playtimer_timeout() -> void:
 	Gamestate.start_game()
-	get_tree().change_scene_to_file("res://scenes/game1.tscn")
+	get_tree().change_scene_to_file(GAME_SCENE_PATH)
 
 func _on_options_pressed() -> void:
 	button_sound.play()
 	options.disabled = true
 	await button_sound.finished
-	get_tree().change_scene_to_file("res://scenes/options_menu.tscn")
+	get_tree().change_scene_to_file(OPTIONS_SCENE_PATH)
 
 func _on_quit_pressed() -> void:
 	get_tree().quit()
+
+func _fade_to_black(duration: float) -> void:
+	var tween = create_tween()
+	tween.tween_property(fadeto_black, "modulate:a", 1.0, duration)

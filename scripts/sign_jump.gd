@@ -16,7 +16,8 @@ func _on_ready() -> void:
 	intro_instructions.visible = false
 	enter_timer.connect("timeout", Callable(self, "_on_enter_timer_timeout"))
 	exit_timer.connect("timeout", Callable(self, "_on_exit_timer_timeout"))
-	animation_player.connect("animation_finished", Callable(self, "_on_animation_finished"))
+	if not _has_animation_finished_connection():
+		animation_player.connect("animation_finished", Callable(self, "_on_animation_finished"))
 	
 # Triggered when the player enters the collision area
 func _on_body_entered(body: Node2D) -> void:
@@ -51,10 +52,19 @@ func _on_exit_timer_timeout() -> void:
 		is_animation_playing = true
 		animation_player.play("fadeouttext")
 
-func _on_animation_player_animation_finished(anim_name: StringName) -> void:
+func _on_animation_finished(anim_name: StringName) -> void:
 	is_animation_playing = false
 	if anim_name == "fadeintext":
 		fade_in_completed = true
 	elif anim_name == "fadeouttext" and not is_player_inside:
 		intro_instructions.visible = false # Hide the label only after fade-out complete
 		queue_free()
+
+func _on_animation_player_animation_finished(anim_name: StringName) -> void:
+	_on_animation_finished(anim_name)
+
+func _has_animation_finished_connection() -> bool:
+	return (
+		animation_player.is_connected("animation_finished", Callable(self, "_on_animation_finished"))
+		or animation_player.is_connected("animation_finished", Callable(self, "_on_animation_player_animation_finished"))
+	)
