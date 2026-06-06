@@ -30,6 +30,7 @@ func _fade_player_to_black(body: Node2D) -> void:
 		fade_tween.tween_property(fade_overlay, "modulate:a", 1.0, FADE_DURATION)
 
 func _notify_player_collision(body: Node2D) -> void:
+	# Let the player script react to death without adding another signal path.
 	if body.has_method("_on_body_entered"):
 		body._on_body_entered(self)
 
@@ -39,6 +40,7 @@ func _enter_death_state() -> void:
 	Gamestate.alive = false
 
 func _remove_player_collision(body: Node2D) -> void:
+	# Avoid repeat killzone hits while the death timer is running.
 	if body.has_node("CollisionShape2D"):
 		body.get_node("CollisionShape2D").queue_free()
 

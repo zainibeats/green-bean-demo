@@ -48,6 +48,7 @@ func level_complete() -> void:
 	
 	var next_level_path := _get_next_level_path()
 	
+	# The final scene is a results screen, not a playable timed level.
 	if next_level_path == FINAL_LEVEL_PATH:
 		_prepare_final_level()
 		
@@ -107,6 +108,7 @@ func reset_level() -> void:
 	reset()
 	resume_game()
 	
+	# Wait for the reloaded scene tree before restarting its music.
 	await get_tree().process_frame
 	Music.background_music.stop()
 	Music.background_music.seek(0)
@@ -140,6 +142,7 @@ func _restart_background_music() -> void:
 
 func _get_next_level_path() -> String:
 	var current_scene_file = get_tree().current_scene.scene_file_path
+	# The level filenames are game1.tscn, game_2.tscn, game_3.tscn.
 	var next_level_number = current_scene_file.to_int() + 2
 	return FILE_BEGIN + str(next_level_number) + ".tscn"
 

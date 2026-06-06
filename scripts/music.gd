@@ -42,6 +42,7 @@ func get_saved_volume_percent() -> float:
 	if saved_percent != null:
 		return clampf(float(saved_percent), 0.0, DEFAULT_VOLUME_PERCENT)
 
+	# Older saves stored music volume in dB; convert it to the current percent scale.
 	var legacy_volume_db = ConfigManager.get_value("audio", LEGACY_MUSIC_VOLUME_KEY, 0.0)
 	return remap(clampf(float(legacy_volume_db), MIN_VOLUME_DB, 0.0), MIN_VOLUME_DB, 0.0, 0.0, DEFAULT_VOLUME_PERCENT)
 
@@ -57,6 +58,7 @@ func _percent_to_db(volume_percent: float) -> float:
 	if volume_percent <= 0.0:
 		return MIN_VOLUME_DB
 
+	# Keep the slider linear for the UI while applying Godot's dB audio curve.
 	return linear_to_db(volume_percent / DEFAULT_VOLUME_PERCENT) + MUSIC_BASE_GAIN_DB
 
 func save_volume() -> void:

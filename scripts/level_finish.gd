@@ -22,6 +22,7 @@ func _start_finish_sequence(body: Node2D) -> void:
 	_fade_music_out()
 	_fade_player_to_black(body)
 	finish_sound.play()
+	# The timer gives the fade and finish sound time to complete before loading.
 	timer.start()
 
 func _fade_music_out() -> void:

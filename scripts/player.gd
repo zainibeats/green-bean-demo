@@ -121,6 +121,7 @@ func _handle_jump() -> void:
 	if not Input.is_action_just_pressed("jump"):
 		return
 
+	# Coyote time allows a first jump just after leaving an edge.
 	if _can_first_jump():
 		_perform_first_jump()
 	elif _can_double_jump():
@@ -203,6 +204,7 @@ func _get_current_speed() -> float:
 func _block_crouch_edge_movement(direction: float) -> float:
 	if edge_ray.is_colliding():
 		return direction
+	# Prevent crouch-walking off a ledge when the forward edge ray has no floor.
 	if (direction > 0 and edge_ray.target_position.x > 0) or (direction < 0 and edge_ray.target_position.x < 0):
 		return 0.0
 	return direction
@@ -271,6 +273,7 @@ func _handle_death() -> void:
 	else:
 		hurt_sound_2.play()
 	has_died = true	
+	# Treat the respawn as a fresh landing so the first floor contact stays silent.
 	is_first_landing = true
 	animated_sprite.play("death")
 

@@ -23,7 +23,7 @@ func load_config() -> void:
 		push_error("Failed to load settings.cfg, creating a new one")
 		config.clear()
 
-# Get a value from the configuration file, returning a defualt if the key doesn't exist
+# Get a value from the configuration file, returning a default if the key doesn't exist
 func get_value(section: String, key: String, default_value: Variant) -> Variant:
 	return config.get_value(section, key, default_value)
 
