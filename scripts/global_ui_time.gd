@@ -6,7 +6,7 @@ extends CanvasLayer
 @onready var final_time_panel: Panel = $FinalLabel/Panel
 @onready var final_time_label: Label = $FinalLabel/Panel/FinalTime
 
-var rage_panel: Panel
+var rage_panel: Control
 var rage_label: Label
 var burst_label: Label
 var burst_tween: Tween
@@ -31,7 +31,7 @@ func update_timer(minutes: int, seconds: int):
 
 func show_final_message(message: String) -> void:
 	# Display the final time
-	final_time_label.text = "%s  Deaths: %d  Best chain: %d" % [
+	final_time_label.text = "%s\nDeaths: %d\nBest chain: %d" % [
 		message,
 		GlobalStats.total_deaths,
 		GlobalStats.best_coin_streak,
@@ -68,28 +68,29 @@ func _build_rage_hud() -> void:
 	if rage_panel:
 		return
 
-	rage_panel = Panel.new()
+	rage_panel = PanelContainer.new()
 	rage_panel.name = "RagePanel"
 	rage_panel.z_index = 40
-	rage_panel.anchor_right = 1.0
+	rage_panel.anchors_preset = Control.PRESET_TOP_LEFT
 	rage_panel.offset_left = 16.0
 	rage_panel.offset_top = 16.0
-	rage_panel.offset_right = -1490.0
-	rage_panel.offset_bottom = 86.0
 	rage_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(rage_panel)
 
+	var margin_container = MarginContainer.new()
+	margin_container.name = "Margin"
+	margin_container.add_theme_constant_override("margin_left", 12)
+	margin_container.add_theme_constant_override("margin_top", 8)
+	margin_container.add_theme_constant_override("margin_right", 12)
+	margin_container.add_theme_constant_override("margin_bottom", 8)
+	rage_panel.add_child(margin_container)
+
 	rage_label = Label.new()
 	rage_label.name = "RageLabel"
-	rage_label.set_anchors_preset(Control.PRESET_FULL_RECT)
-	rage_label.offset_left = 12.0
-	rage_label.offset_top = 8.0
-	rage_label.offset_right = -12.0
-	rage_label.offset_bottom = -8.0
 	rage_label.add_theme_font_size_override("font_size", 22)
 	rage_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 	rage_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	rage_panel.add_child(rage_label)
+	margin_container.add_child(rage_label)
 
 	burst_label = Label.new()
 	burst_label.name = "BurstLabel"
@@ -113,8 +114,8 @@ func _update_rage_hud() -> void:
 	rage_panel.visible = true
 	var mode_text := ""
 	if GlobalStats.is_spite_mode_active():
-		mode_text = "  SPITE %.1fs" % GlobalStats.spite_mode_time_remaining
-	rage_label.text = "Deaths %d  Level %d  Chain %d  Spite %d%%%s" % [
+		mode_text = "\nSPITE %.1fs" % GlobalStats.spite_mode_time_remaining
+	rage_label.text = "Deaths: %d\nLevel: %d\nChain: %d\nSpite: %d%%%s" % [
 		GlobalStats.total_deaths,
 		GlobalStats.level_deaths,
 		GlobalStats.coin_streak,
