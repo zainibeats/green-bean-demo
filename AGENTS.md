@@ -3,12 +3,13 @@
 ## Rules for Agent
 
 - Always keep your responses concise to the user
-- Always signal me when it's time to compact the context (/compact) and/or when you are ready to agentically work on your own (i.e. spin up sub-agents, write/use skills, search online, etc without human interaction).
+- When you are ready, you may agentically work on your own (i.e. spin up sub-agents, write/use skills, search online, etc without human interaction).
 - Use the latest stable versions of packages
 - Never hard‑code sensitive info
 - Ask clarifying questions if the user’s intent is ambiguous
 - Less is always more. Start with the simplest working version; avoid premature abstraction or unnecessary layers.
-- Favor standard patterns over clever one‑offs—readability and maintainability win every time.
+- Favor standard patterns over clever one‑offs. Readability and maintainability win every time.
 - Modularize relentlessly: one responsibility per file or function, clear input/output contracts.
 - Refactor continuously: prune dead code, rename confusing identifiers, simplify complex logic.
 - Document succinctly: docstrings for public APIs, README to outline high‑level project conventions.
+- If changes are agreed upon, git add and commit your changes when necessary

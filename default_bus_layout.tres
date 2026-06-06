@@ -1,4 +1,4 @@
-[gd_resource type="AudioBusLayout" load_steps=9 format=3 uid="uid://btru4562c16ua"]
+[gd_resource type="AudioBusLayout" format=3 uid="uid://btru4562c16ua"]
 
 [sub_resource type="AudioEffectLimiter" id="AudioEffectLimiter_47okw"]
 resource_name = "Limiter"
