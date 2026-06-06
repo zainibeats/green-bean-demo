@@ -6,5 +6,6 @@ extends Area2D
 func _on_body_entered(body: Node2D) -> void:
 	if body.name == "Player":
 		game_manager.add_point()
-		GlobalStats.total_coins += 1 # Increase coins globally
+		var coin_stats := GlobalStats.record_coin()
+		GlobalUiTime.show_coin_feedback(coin_stats)
 		animation_player.play("pickup")

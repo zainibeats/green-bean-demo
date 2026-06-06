@@ -35,6 +35,7 @@ func start_game() -> void:
 	if not ConfigManager.ready:
 		await ConfigManager.ready
 	
+	GlobalStats.reset_run_stats()
 	_apply_audio_settings()
 	can_pause = true
 	game_started = true
@@ -51,6 +52,8 @@ func level_complete() -> void:
 	# The final scene is a results screen, not a playable timed level.
 	if next_level_path == FINAL_LEVEL_PATH:
 		_prepare_final_level()
+	else:
+		GlobalStats.start_next_level()
 		
 	get_tree().change_scene_to_file(next_level_path)
 	reset()
@@ -105,6 +108,7 @@ func reset_level() -> void:
 	
 	can_pause = true
 	start_time = 0
+	GlobalStats.start_next_level()
 	reset()
 	resume_game()
 	

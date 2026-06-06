@@ -21,7 +21,10 @@ func update_score_label() -> void:
 	score_label.text = _get_score_text()
 
 func _get_score_text() -> String:
-	return "%d of %d coins" % [score, total_coins]
+	var streak_text := ""
+	if GlobalStats.coin_streak >= 3:
+		streak_text = "  x%d chain" % GlobalStats.coin_streak
+	return "%d of %d coins%s" % [score, total_coins, streak_text]
 
 func _play_completion_sound_if_needed() -> void:
 	if score == total_coins:

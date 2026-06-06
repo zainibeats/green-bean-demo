@@ -6,6 +6,11 @@ const CROUCH_SPEED: float = 40.0
 const JUMP_VELOCITY: float = -300.0
 const MAX_JUMPS: int = 2
 const COYOTE_TIME: float = 0.2
+const JUMP_BUFFER_TIME: float = 0.12
+const JUMP_CUT_MULTIPLIER: float = 0.45
+const FALL_GRAVITY_MULTIPLIER: float = 1.35
+const APEX_GRAVITY_MULTIPLIER: float = 0.65
+const APEX_GRAVITY_THRESHOLD: float = 40.0
 const EDGE_RAY_RIGHT: Vector2 = Vector2(8, 2)
 const EDGE_RAY_LEFT: Vector2 = Vector2(-8, 2)
 const LANDING_GRUNT_CHANCE: float = 0.8
@@ -35,6 +40,7 @@ var double_jump_started = false
 var jump_started = false
 var safe_landing = true
 var is_crouched = false
+var jump_buffer_timer = 0.0
 
 # DEBUG VARIABLES. DELETE WHEN EXPORTING
 var teleport_target = null
@@ -45,6 +51,8 @@ func _on_ready() -> void:
 	hurt_sound_2.connect("finished", Callable(self, "_on_death_sound_finished"))
 
 	_set_active_skin(active_skin_index)
+	if GlobalStats.try_start_spite_mode():
+		GlobalUiTime.show_status_burst("SPITE MODE", Color(1.0, 0.18, 0.12))
 
 func _set_active_skin(index: int) -> void:
 	for i in range(animated_sprites.size()):
@@ -67,12 +75,14 @@ func _physics_process(delta: float) -> void:
 		velocity = Vector2.ZERO
 		return
 
+	GlobalStats.update_spite_mode(delta)
 	_update_vertical_state(delta)
 
 	_handle_crouch()
 	
 	if not is_crouched:
-		_handle_jump()
+		_handle_jump(delta)
+		_handle_jump_release()
 	
 	_handle_horizontal_movement()
 	_update_animation()
@@ -86,9 +96,17 @@ func _update_vertical_state(delta: float) -> void:
 		_reset_ground_state()
 		return
 
-	velocity += get_gravity() * delta
+	velocity += _get_weighted_gravity() * delta
 	coyote_timer -= delta
 	is_airborne = true
+
+func _get_weighted_gravity() -> Vector2:
+	var gravity := get_gravity()
+	if velocity.y > 0.0:
+		gravity *= FALL_GRAVITY_MULTIPLIER
+	elif absf(velocity.y) < APEX_GRAVITY_THRESHOLD:
+		gravity *= APEX_GRAVITY_MULTIPLIER
+	return gravity * GlobalStats.get_gravity_multiplier()
 
 func _handle_debug() -> void:
 	if Input.is_action_pressed("debug_mode") and not Gamestate.debug_mode:
@@ -117,8 +135,13 @@ func _handle_crouch() -> void:
 		if velocity.x != 0 and not dust_fx.is_playing():
 			_play_dust_fx()
 
-func _handle_jump() -> void:
-	if not Input.is_action_just_pressed("jump"):
+func _handle_jump(delta: float) -> void:
+	if Input.is_action_just_pressed("jump"):
+		jump_buffer_timer = JUMP_BUFFER_TIME
+	else:
+		jump_buffer_timer = max(0.0, jump_buffer_timer - delta)
+
+	if jump_buffer_timer <= 0.0:
 		return
 
 	# Coyote time allows a first jump just after leaving an edge.
@@ -128,6 +151,10 @@ func _handle_jump() -> void:
 		_perform_double_jump()
 	elif _can_air_jump_without_coyote():
 		_perform_air_jump_without_coyote()
+
+func _handle_jump_release() -> void:
+	if Input.is_action_just_released("jump") and velocity.y < 0.0:
+		velocity.y *= JUMP_CUT_MULTIPLIER
 
 func _can_first_jump() -> bool:
 	return jumps_remaining == MAX_JUMPS and (is_on_floor() or coyote_timer > 0)
@@ -153,9 +180,10 @@ func _perform_air_jump_without_coyote() -> void:
 	jump_sound.play()
 
 func _perform_jump(animation: String, is_double_jump: bool = false) -> void:
-	velocity.y = JUMP_VELOCITY
+	velocity.y = JUMP_VELOCITY * GlobalStats.get_jump_multiplier()
 	animated_sprite.play(animation)
 	jumps_remaining -= 1
+	jump_buffer_timer = 0.0
 	jump_started = true
 	if is_double_jump:
 		double_jump_started = true
@@ -199,7 +227,7 @@ func _handle_horizontal_movement() -> void:
 	_update_facing(direction)
 
 func _get_current_speed() -> float:
-	return SPEED * (1.0 if Input.is_action_pressed("walk") else RUN_MULTIPLIER)
+	return SPEED * (1.0 if Input.is_action_pressed("walk") else RUN_MULTIPLIER) * GlobalStats.get_speed_multiplier()
 
 func _block_crouch_edge_movement(direction: float) -> float:
 	if edge_ray.is_colliding():

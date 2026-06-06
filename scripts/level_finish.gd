@@ -19,6 +19,7 @@ func _on_timer_timeout() -> void:
 func _start_finish_sequence(body: Node2D) -> void:
 	Gamestate.is_level_finished = true
 	Gamestate.cannot_move = true
+	GlobalUiTime.show_status_burst("LEVEL CLEARED", Color(0.2, 1.0, 0.35))
 	_fade_music_out()
 	_fade_player_to_black(body)
 	finish_sound.play()

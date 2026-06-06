@@ -11,6 +11,8 @@ func _on_body_entered(body: Node2D) -> void:
 	if body.name != "Player" or Gamestate.is_invincible:
 		return
 
+	var taunt := GlobalStats.record_death()
+	GlobalUiTime.show_death_taunt(taunt)
 	_fade_player_to_black(body)
 	_notify_player_collision(body)
 	_enter_death_state()
