@@ -28,11 +28,11 @@ const DEATH_SOUND_1_CHANCE: float = 0.8
 var active_skin_index = 0
 var jumps_remaining = MAX_JUMPS
 var coyote_timer = 0.0 
-var in_air = false 
+var is_airborne = false
 var has_died = false
-var first_landing = true
-var doublejump_started = false
-var first_jump = false
+var is_first_landing = true
+var double_jump_started = false
+var jump_started = false
 var safe_landing = true
 var is_crouched = false
 
@@ -88,7 +88,7 @@ func _update_vertical_state(delta: float) -> void:
 
 	velocity += get_gravity() * delta
 	coyote_timer -= delta
-	in_air = true
+	is_airborne = true
 
 func _handle_debug() -> void:
 	if Input.is_action_pressed("debug_mode") and not Gamestate.debug_mode:
@@ -135,7 +135,7 @@ func _can_double_jump() -> bool:
 	return jumps_remaining == 1
 
 func _can_air_jump_without_coyote() -> bool:
-	return jumps_remaining == MAX_JUMPS and in_air and coyote_timer <= 0
+	return jumps_remaining == MAX_JUMPS and is_airborne and coyote_timer <= 0
 
 func _perform_first_jump() -> void:
 	_perform_jump("jump")
@@ -155,9 +155,9 @@ func _perform_jump(animation: String, is_double_jump: bool = false) -> void:
 	velocity.y = JUMP_VELOCITY
 	animated_sprite.play(animation)
 	jumps_remaining -= 1
-	first_jump = true
+	jump_started = true
 	if is_double_jump:
-		doublejump_started = true
+		double_jump_started = true
 
 func _reset_ground_state() -> void:
 	if has_died:
@@ -165,15 +165,15 @@ func _reset_ground_state() -> void:
 
 	if jumps_remaining != MAX_JUMPS:
 		jumps_remaining = MAX_JUMPS
-		doublejump_started = false
+		double_jump_started = false
 	coyote_timer = COYOTE_TIME
 	
-	if in_air and not first_landing:
+	if is_airborne and not is_first_landing:
 		_play_landing_sound()
 		
-	in_air = false
-	first_landing = false
-	first_jump = false
+	is_airborne = false
+	is_first_landing = false
+	jump_started = false
 
 func _play_landing_sound() -> void:
 	if randf() <= LANDING_GRUNT_CHANCE:
@@ -241,10 +241,10 @@ func _update_ground_animation() -> void:
 		_stop_dust_fx()
 
 func _update_air_animation() -> void:
-	if doublejump_started:
+	if double_jump_started:
 		_play_if_needed("doublejump")
 	elif velocity.y > 0:
-		if not first_jump:
+		if not jump_started:
 			_play_if_needed("fall")
 	else:
 		_play_if_needed("jump")
@@ -271,7 +271,7 @@ func _handle_death() -> void:
 	else:
 		hurt_sound_2.play()
 	has_died = true	
-	first_landing = true
+	is_first_landing = true
 	animated_sprite.play("death")
 
 func _on_death_sound_finished() -> void:

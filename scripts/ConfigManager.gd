@@ -35,8 +35,8 @@ func set_value(section: String, key: String, value: Variant) -> void:
 
 # Save configuration to disk
 func save_config() -> void:
-	var err = config.save(CONFIG_PATH)
-	if err == OK:
+	var save_error = config.save(CONFIG_PATH)
+	if save_error == OK:
 		print ("Successfully saved %s" % CONFIG_PATH)
 	else:
-		push_error("Failed to save %s with error code: %d" % [CONFIG_PATH, err])
+		push_error("Failed to save %s with error code: %d" % [CONFIG_PATH, save_error])

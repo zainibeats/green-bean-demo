@@ -4,7 +4,7 @@ extends CanvasLayer
 @onready var seconds_label: Label = %SecondsLabel
 @onready var timer_panel: Panel = $Panel
 @onready var final_time_panel: Panel = $FinalLabel/Panel
-@onready var final_time: Label = $FinalLabel/Panel/FinalTime
+@onready var final_time_label: Label = $FinalLabel/Panel/FinalTime
 
 func _on_ready() -> void:
 	final_time_panel.visible = false
@@ -17,10 +17,10 @@ func _process(delta: float) -> void:
 		timer_panel.visible = false
 
 func update_timer(minutes: int, seconds: int):
-	%MinutesLabel.text = "%02d:" % minutes
-	%SecondsLabel.text = "%02d" % seconds
+	minutes_label.text = "%02d:" % minutes
+	seconds_label.text = "%02d" % seconds
 
 func show_final_message(message: String) -> void:
 	# Display the final time
-	final_time.text = message
+	final_time_label.text = message
 	final_time_panel.visible = true

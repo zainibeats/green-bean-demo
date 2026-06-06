@@ -9,7 +9,7 @@ extends Area2D
 
 var is_player_inside: bool = false
 var is_animation_playing: bool = false
-var fade_in_completed: bool = false
+var has_faded_in: bool = false
 
 # Ensure the label is hidden initially
 func _on_ready() -> void:
@@ -21,7 +21,7 @@ func _on_ready() -> void:
 	
 # Triggered when the player enters the collision area
 func _on_body_entered(body: Node2D) -> void:
-	if body.name == "Player" and not is_animation_playing and not fade_in_completed:
+	if body.name == "Player" and not is_animation_playing and not has_faded_in:
 		is_player_inside = true
 		exit_timer.stop() # Cancel exit timer if running
 		enter_timer.start() # Delay to let the player settle before showing the label
@@ -43,25 +43,25 @@ func _show_message() -> void:
 # Called when the enter timer times out
 func _on_enter_timer_timeout() -> void:
 	enter_timer.stop()
-	if is_player_inside and not fade_in_completed:
+	if is_player_inside and not has_faded_in:
 		_show_message()
 
 # Hide the message with fade-out animation when the timer times out
 func _on_exit_timer_timeout() -> void:
-	if not is_player_inside and intro_instructions.visible and not is_animation_playing and fade_in_completed: 
+	if not is_player_inside and intro_instructions.visible and not is_animation_playing and has_faded_in:
 		is_animation_playing = true
 		animation_player.play("fadeouttext")
 
-func _on_animation_finished(anim_name: StringName) -> void:
+func _on_animation_finished(animation_name: StringName) -> void:
 	is_animation_playing = false
-	if anim_name == "fadeintext":
-		fade_in_completed = true
-	elif anim_name == "fadeouttext" and not is_player_inside:
+	if animation_name == "fadeintext":
+		has_faded_in = true
+	elif animation_name == "fadeouttext" and not is_player_inside:
 		intro_instructions.visible = false # Hide the label only after fade-out complete
 		queue_free()
 
-func _on_animation_player_animation_finished(anim_name: StringName) -> void:
-	_on_animation_finished(anim_name)
+func _on_animation_player_animation_finished(animation_name: StringName) -> void:
+	_on_animation_finished(animation_name)
 
 func _has_animation_finished_connection() -> bool:
 	return (

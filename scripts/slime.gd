@@ -2,7 +2,7 @@ extends Node2D
 
 const SPEED = 60
 
-var direction = 1
+var movement_direction = 1
 
 @onready var ray_cast_right: RayCast2D = $RayCastRight
 @onready var ray_cast_left: RayCast2D = $RayCastLeft
@@ -13,12 +13,12 @@ var direction = 1
 # Flip sprite if raycast is colliding
 func _process(delta: float) -> void:
 	if ray_cast_right.is_colliding():
-		direction = -1
+		movement_direction = -1
 		animated_sprite.flip_h = true
 	if ray_cast_left.is_colliding():
-		direction = 1
+		movement_direction = 1
 		animated_sprite.flip_h = false
 
 	# Move the Enemy if play is alive
 	
-	position.x += direction * SPEED * delta
+	position.x += movement_direction * SPEED * delta

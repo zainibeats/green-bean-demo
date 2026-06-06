@@ -8,7 +8,7 @@ extends Area2D
 
 var is_player_inside: bool = false
 var is_animation_playing: bool = false
-var hint_shown: bool = false # Track if the hint has already been shown
+var has_shown_hint: bool = false
 
 # Ensure the label is hidden initially
 func _on_ready() -> void:
@@ -21,7 +21,7 @@ func _on_ready() -> void:
 func _on_body_entered(body: Node2D) -> void:
 	if body.name == "Player" and not is_player_inside:
 		is_player_inside = true
-		hint_shown = false
+		has_shown_hint = false
 		enter_timer.start(8)
 		exit_timer.stop() # Cancel exit timer if running
 
@@ -33,8 +33,8 @@ func _on_body_exited(body: Node2D) -> void:
 
 # Display the message with fade-in animation
 func _show_message() -> void:
-	if not is_animation_playing and not hint_shown:
-		hint_shown = true
+	if not is_animation_playing and not has_shown_hint:
+		has_shown_hint = true
 		label.visible = true
 		animation_player.play("fadeintext")
 
@@ -47,9 +47,9 @@ func _on_exit_timer_timeout() -> void:
 		label.visible = false
 		queue_free()
 
-func _on_animation_finished(anim_name: String) -> void:
+func _on_animation_finished(animation_name: String) -> void:
 	is_animation_playing = false
-	if anim_name == "fadeintext" and not is_player_inside:
+	if animation_name == "fadeintext" and not is_player_inside:
 		label.visible = false # Hide the label only after fade-out completes
 		
 func _on_enter_timer_timeout() -> void:

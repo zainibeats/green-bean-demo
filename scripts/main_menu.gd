@@ -13,7 +13,7 @@ const FADE_DURATION: float = 2.0
 @onready var button_sound: AudioStreamPlayer2D = $"Button Sound"
 @onready var start_sound: AudioStreamPlayer2D = $StartSound
 @onready var fadeto_black: ColorRect = $FadetoBlack
-@onready var playtimer: Timer = $Timers/Playtimer
+@onready var start_delay_timer: Timer = $Timers/Playtimer
 @onready var animation_player: AnimationPlayer = $VBoxContainer/TitleReal/AnimationPlayer
 
 func _on_ready() -> void:
@@ -27,7 +27,7 @@ func _on_start_pressed() -> void:
 	start.disabled = true
 	Music.menu_music.stop()
 	start_sound.play()
-	playtimer.start(START_DELAY)
+	start_delay_timer.start(START_DELAY)
 	
 	_fade_to_black(FADE_DURATION)
 	animation_player.play("shake")
@@ -46,5 +46,5 @@ func _on_quit_pressed() -> void:
 	get_tree().quit()
 
 func _fade_to_black(duration: float) -> void:
-	var tween = create_tween()
-	tween.tween_property(fadeto_black, "modulate:a", 1.0, duration)
+	var fade_tween = create_tween()
+	fade_tween.tween_property(fadeto_black, "modulate:a", 1.0, duration)

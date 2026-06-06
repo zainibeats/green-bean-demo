@@ -52,7 +52,7 @@ func _on_exit_timer_timeout() -> void:
 		queue_free()
 		
 # Handle animation completion
-func _on_animation_finished(anim_name: String) -> void:
+func _on_animation_finished(animation_name: String) -> void:
 	is_animation_playing = false
-	if anim_name == "fadeouttext" and not is_player_inside:
+	if animation_name == "fadeouttext" and not is_player_inside:
 		intro_instructions.visible = false # Hide the label only after fade-out completes

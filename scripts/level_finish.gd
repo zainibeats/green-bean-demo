@@ -34,7 +34,7 @@ func _fade_music_out() -> void:
 	)
 
 func _fade_player_to_black(body: Node2D) -> void:
-	var fade_node = body.get_node("FadetoBlack")
-	if fade_node:
+	var fade_overlay = body.get_node("FadetoBlack")
+	if fade_overlay:
 		var fade_tween = create_tween()
-		fade_tween.tween_property(fade_node, "modulate:a", 1.0, FINISH_FADE_DURATION)
+		fade_tween.tween_property(fade_overlay, "modulate:a", 1.0, FINISH_FADE_DURATION)

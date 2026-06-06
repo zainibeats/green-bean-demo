@@ -16,9 +16,9 @@ func _on_ready() -> void:
 		_on_config_ready()
 
 func _on_config_ready() -> void:
-	var music_volume = Music.get_saved_volume_percent()
-	Music.set_volume(music_volume)
-	music_slider.value = music_volume
+	var saved_music_volume = Music.get_saved_volume_percent()
+	Music.set_volume(saved_music_volume)
+	music_slider.value = saved_music_volume
 	master_slider.value = ConfigManager.get_value("audio", "master_volume", 0)
 
 func _on_back_pressed() -> void:
@@ -57,9 +57,9 @@ func _on_music_slider_value_changed(value: float) -> void:
 	Music.set_volume(value)
 
 func _on_volume_slider_drag_ended(value_changed: bool) -> void:
-	var volume = music_slider.value
-	Music.set_volume(volume)
-	_save_audio_value(Music.MUSIC_VOLUME_PERCENT_KEY, volume)
+	var music_volume = music_slider.value
+	Music.set_volume(music_volume)
+	_save_audio_value(Music.MUSIC_VOLUME_PERCENT_KEY, music_volume)
 
 func _play_button_sound() -> void:
 	button_sound.play()
