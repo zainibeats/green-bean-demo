@@ -1,67 +1,67 @@
 # Grubby Gobblin'
 
-"Greed Your Way to Victory!"
+> Greed Your Way to Victory!
 
+Grubby Gobblin' is a prototype precision platformer built in Godot. Chase coins, race the clock, and climb through timing-based jumps, quick movement, enemies, and traps.
 
-⚠️ **Disclaimer** ⚠️
-This is a prototype, not a full game. Expect bugs, incomplete features, and rough edges. Feedback is welcome! (check below)
+![Grubby Gobblin' title screen](assets/ui_etc/CoverImage_DEMO.png)
 
----------------------------------
-🔹 **Created By**: Cheyenne Zaini
-🔹 **Version**: DEMO_v0.1.4
-🔹 **Original Release Date**: 12/8/2024 (itch.io)
-🔹 **Engine**: Godot Engine  
-🔹 **Platform**: Windows (itch.io release)
----------------------------------
+## Project Status
 
-## 🎮 About The Game
+This repository contains a prototype, not a full game. Expect bugs, incomplete features, and rough edges.
 
-Take control of The Grubby Gobblin', a mischievous little gremlin with big dreams and even bigger hops! Master precise, timing-based jumps and quick, fluid movement as you dodge enemies and avoid deadly traps — one wrong move sends you back to the start.
+| Detail | Value |
+| --- | --- |
+| Created by | Cheyenne Zaini |
+| Version | DEMO_v0.1.4 |
+| Original release | December 8, 2024 on itch.io |
+| Engine | Godot Engine 4.6 |
+| Platform | Windows itch.io demo |
 
-Chase coins, race the clock, and aim for perfection in this cute-but-challenging platformer built for speedrunners *and* casual players alike. Handcrafted by a solo developer, Grubby Gobblin' blends nostalgic flash-game charm with modern precision platforming. Can you hop to the top, or will the timer (and the pointy things) break you first?
+## About
 
-## 💡 How To Play (From Source)
+Take control of The Grubby Gobblin', a mischievous little gremlin with big dreams and even bigger hops. Master precise, timing-based jumps and quick, fluid movement as you dodge enemies and avoid deadly traps. One wrong move sends you back to the start.
 
-1.  Ensure you have the Godot Engine installed (check the `project.godot` file for the specific version if needed).
-2.  Clone or download this repository.
-3.  Open the Godot Engine project manager.
-4.  Click "Import" and navigate to the folder containing the `project.godot` file.
-5.  Select the `project.godot` file and click "Open".
-6.  Once the project is imported, select it in the project manager and click "Run".
+The game blends nostalgic Flash-game charm with modern precision platforming, with a focus on speedrunning, replayability, and tight movement.
 
-*(For the playable demo build, see the itch.io page linked below).*
+## Play From Source
 
-## 📁 Project Structure
+1. Install Godot Engine 4.6 or a compatible version.
+2. Clone or download this repository.
+3. Open the Godot project manager.
+4. Select `Import`.
+5. Choose the `project.godot` file in this repository.
+6. Run the imported project.
 
-A brief overview of the main directories:
+For the packaged demo, use the itch.io link below.
 
-*   **`assets/`**: Contains game assets like sprites, sounds, fonts, and UI elements.
-*   **`scripts/`**: Contains all the GDScript files for game logic, including player movement, enemies, UI, game state, etc.
-*   **`project.godot`**: The main Godot project configuration file.
-*   **(Other Godot specific files/folders)**: Scene files (`.tscn`), resources (`.res`), etc.
+## Project Structure
 
-## 📢 Feedback & Contact
+```text
+assets/          Game assets, including sprites, sounds, fonts, and UI images
+scenes/          Godot scene files
+scripts/         GDScript files for gameplay, UI, and game state
+project.godot    Main Godot project configuration
+```
 
-Would love to hear from you! If you'd like to share your thoughts or report a bug, contact me at:
-📧 cheyenne.zaini@gmail.com
-📘 Instagram: @zainibeats
+## Links
 
-## 📜 Licenses & Credits
+- Demo: [zainidev.itch.io/grubby-gobblin-demo](https://zainidev.itch.io/grubby-gobblin-demo)
+- Instagram: [@zainibeats](https://www.instagram.com/zainibeats)
+- Contact: cheyenne.zaini@gmail.com
 
-*   **Code License**: [GNU General Public License v3.0 (GPL)](https://www.gnu.org/licenses/gpl-3.0.en.html)
-*   **Asset License**: [Creative Commons Attribution v4.0 International](https://creativecommons.org/licenses/by/4.0/)
-*   **Sounds**: All self recorded / produced / designed
-*   **Font**: [kenney.itch.io](https://kenney.nl/assets/kenney-fonts)
-*   **Tileset / Sprites**: [kevins-moms-house.itch.io](https://kevins-moms-house.itch.io/) *(Specific asset pack name could be added here if known)*
-*   **Goblin Sprite**: [danieldiggle.itch.io](https://danieldiggle.itch.io/) *(Specific asset pack name could be added here if known)*
-*   **Made with**: Godot Engine, GIMP, FL Studio (as per itch.io)
+## Licenses And Credits
 
-## 🚫 Please Do Not Redistribute
+- Code license: [GNU General Public License v3.0](https://www.gnu.org/licenses/gpl-3.0.en.html)
+- Asset license: [Creative Commons Attribution 4.0 International](https://creativecommons.org/licenses/by/4.0/)
+- Sounds: self-recorded, produced, and designed
+- Font: [Kenney Fonts](https://kenney.nl/assets/kenney-fonts)
+- Tileset and sprites: [kevins-moms-house.itch.io](https://kevins-moms-house.itch.io/)
+- Goblin sprite: [danieldiggle.itch.io](https://danieldiggle.itch.io/)
+- Tools: Godot Engine, GIMP, FL Studio
 
-If you want to share the game, please direct people to the official itch.io page:
-🌐 [zainidev.itch.io/grubby-gobblin-demo](https://zainidev.itch.io/grubby-gobblin-demo)
+## Redistribution
 
----
+Please do not redistribute the playable demo. To share the game, direct people to the official itch.io page:
 
-✨ Thank you for checking out the project! <3
-
+[zainidev.itch.io/grubby-gobblin-demo](https://zainidev.itch.io/grubby-gobblin-demo)
