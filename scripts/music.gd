@@ -4,7 +4,6 @@ const MUSIC_VOLUME_PERCENT_KEY: String = "music_volume_percent"
 const LEGACY_MUSIC_VOLUME_KEY: String = "music_volume"
 const DEFAULT_VOLUME_PERCENT: float = 100.0
 const MIN_VOLUME_DB: float = -80.0
-const MUSIC_BASE_GAIN_DB: float = 4.0
 
 @onready var menu_music: AudioStreamPlayer2D = $MenuMusic
 @onready var background_music: AudioStreamPlayer2D = $"."
@@ -59,7 +58,7 @@ func _percent_to_db(volume_percent: float) -> float:
 		return MIN_VOLUME_DB
 
 	# Keep the slider linear for the UI while applying Godot's dB audio curve.
-	return linear_to_db(volume_percent / DEFAULT_VOLUME_PERCENT) + MUSIC_BASE_GAIN_DB
+	return linear_to_db(volume_percent / DEFAULT_VOLUME_PERCENT)
 
 func save_volume() -> void:
 	ConfigManager.set_value("audio", MUSIC_VOLUME_PERCENT_KEY, current_volume)
