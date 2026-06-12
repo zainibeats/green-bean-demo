@@ -15,7 +15,7 @@ This repository contains a prototype, not a full game. Expect bugs, incomplete f
 | Created by | Cheyenne Zaini |
 | Version | DEMO_v0.1.4 |
 | Original release | December 8, 2024 on itch.io |
-| Engine | Godot Engine 4.6 |
+| Engine | Godot Engine 4.3 |
 | Platform | Windows itch.io demo |
 
 ## About
